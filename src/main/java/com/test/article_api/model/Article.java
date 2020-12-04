@@ -4,6 +4,8 @@ import lombok.*;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.util.CollectionUtils;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,8 +13,10 @@ import java.util.List;
 @Document
 public class Article  extends BaseEntity {
 
+    @NotNull(message = "Author is mandatory")
     private Person author;
 
+    @NotBlank(message = "Text is mandatory")
     private String text;
 
     private ArticleState state;
@@ -21,7 +25,7 @@ public class Article  extends BaseEntity {
 
     public void addCommentary(Comment comment) {
         if (CollectionUtils.isEmpty(commentaries)) {
-            commentaries = new ArrayList();
+            commentaries = new ArrayList<>();
         }
         commentaries.add(comment);
     }

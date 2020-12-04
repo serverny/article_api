@@ -1,26 +1,31 @@
 package com.test.article_api.model;
 
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.util.CollectionUtils;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter
-@Setter
+@Data
+@Document
 public class ArticleTimeline extends BaseEntity {
 
-    @NotNull
+    @NotBlank
     private String articleId;
 
-    private List<Article> articleVersions;
+    @NotNull
+    private Person author;
+
+    private List<Article> articleSnapshots;
 
     public void addArticle(Article article) {
-        if (CollectionUtils.isEmpty(articleVersions)) {
-            articleVersions = new ArrayList<>();
+        if (CollectionUtils.isEmpty(articleSnapshots)) {
+            articleSnapshots = new ArrayList<>();
         }
-        articleVersions.add(article);
+        articleSnapshots.add(article);
     }
 }

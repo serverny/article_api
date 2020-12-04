@@ -2,6 +2,8 @@ package com.test.article_api.service;
 
 import com.test.article_api.model.Article;
 import com.test.article_api.model.ArticleState;
+import com.test.article_api.model.ArticleTimeline;
+import com.test.article_api.model.Person;
 import com.test.article_api.repo.ArticleRepository;
 import com.test.article_api.repo.ArticleTimelineRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +17,10 @@ public class ArticleService {
     @Autowired
     ArticleRepository articleRepository;
 
+/*
     @Autowired
     ArticleTimelineRepository articleTimelineRepository;
+*/
 
     public Mono<Article> findArticle(String id) {
         return articleRepository.findById(id).switchIfEmpty(Mono.error(new Exception("No Article found with Id: " + id)));
@@ -27,8 +31,18 @@ public class ArticleService {
     }
 
     public Mono<Article> createArticle(Article article) {
-        findArticle(article.getId())
-                .flatMap(a -> Mono.error(new Exception("Illegal usage - article with this id already exists")));
+        if (article.getId() != null) {
+/*
+            // TODO: в ту ли сторону я тут копаю, чтобы не дать create отработать как update если обьект уже есть?
+            // Выполнять логику внутри switchIfEmpty вроде как нежелательно. Подумать.
+            return findArticle(article.getId())
+                    .flatMap(a -> Mono.error(new Exception("Illegal usage - article with this id already exists")))
+                    .switchIfEmpty();
+*/
+            return Mono.error(new Exception("Illegal usage - id must be null for new articles"));
+        }
+
+        article.setState(ArticleState.NEW);
         return articleRepository.save(article);
     }
 
@@ -51,9 +65,14 @@ public class ArticleService {
                 .switchIfEmpty(Mono.error(new Exception("Article you are trying to send to Editor not found.")));
     }
 
+/*
     public Flux<Article> findRejectedArticlesForAuthor(String author) {
         return findArticlesByAuthor(author)
                 .filter(article -> ArticleState.REJECTED.equals(article.getState()));
     }
 
+    public Flux<ArticleTimeline> findTimelinesForAuthor(String author) {
+        return articleTimelineRepository.findByAuthor();
+    }
+*/
 }
